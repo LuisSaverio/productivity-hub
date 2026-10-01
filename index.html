@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Productivity Hub</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-black: #000000;
+      --bg-surface: #0a0a0c;
+      --card-bg: #111114;
+      --card-bg-hover: #16161a;
+      --card-border: #1f1f24;
+
+      --ui-white: #ffffff;
+      --ui-white-muted: #e4e4e7;
+      --ui-gray: #a1a1aa;
+      --ui-gray-dark: #52525b;
+      --ui-gray-darker: #27272a;
+      --ui-gray-dim: #18181b;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-full: 9999px;
+
+      --nav-height: 64px;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-black);
+      color: var(--ui-white);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      line-height: 1.4;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background-color: var(--bg-black);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Minimal Header */
+    .app-header {
+      background-color: var(--bg-black);
+      color: var(--ui-white);
+      padding: 18px 18px 14px 18px;
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 22px;
+      height: 22px;
+      background: var(--ui-white);
+      color: var(--bg-black);
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-date {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--ui-gray);
+      background: var(--ui-gray-dim);
+      border: 1px solid var(--card-border);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.2px;
+    }
+
+    /* Content Area */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      padding-bottom: calc(var(--nav-height) + 20px);
+    }
+
+    .app-content::-webkit-scrollbar {
+      width: 3px;
+    }
+    .app-content::-webkit-scrollbar-thumb {
+      background: var(--ui-gray-darker);
+      border-radius: 4px;
+    }
+
+    .tab-view {
+      display: none;
+      animation: fadeIn 0.15s ease forwards;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* UI Cards & Buttons */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    /* 3D Tactile Push Button Design (Reference Implementation) */
+    .btn-3d {
+      --button_radius: 0.7em;
+      --button_color: #ffffff;
+      --button_outline_color: #27272a;
+      display: inline-block;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--button_radius);
+      background: var(--button_outline_color);
+      padding: 0;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .btn-3d .button_top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-sizing: border-box;
+      border: 2px solid var(--button_outline_color);
+      border-radius: var(--button_radius);
+      padding: 0.55em 1.2em;
+      background: var(--button_color);
+      color: #000000;
+      transform: translateY(-0.2em);
+      transition: transform 0.1s ease, background 0.1s ease;
+    }
+
+    .btn-3d:hover .button_top {
+      transform: translateY(-0.3em);
+    }
+
+    .btn-3d:active .button_top {
+      transform: translateY(0);
+    }
+
+    /* Secondary 3D Button */
+    .btn-3d-secondary {
+      --button_radius: 0.7em;
+      --button_color: #18181b;
+      --button_outline_color: #27272a;
+      display: inline-block;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--button_radius);
+      background: var(--button_outline_color);
+      padding: 0;
+      user-select: none;
+    }
+
+    .btn-3d-secondary .button_top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-sizing: border-box;
+      border: 2px solid var(--button_outline_color);
+      border-radius: var(--button_radius);
+      padding: 0.55em 1.2em;
+      background: var(--button_color);
+      color: #ffffff;
+      transform: translateY(-0.2em);
+      transition: transform 0.1s ease;
+    }
+
+    .btn-3d-secondary:hover .button_top {
+      transform: translateY(-0.3em);
+    }
+
+    .btn-3d-secondary:active .button_top {
+      transform: translateY(0);
+    }
+
+    /* Tab 1: Tugas */
+    .task-summary-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .task-summary-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      height: 5px;
+      background: var(--ui-gray-darker);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--ui-white);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .filter-chip {
+      background: var(--ui-gray-dim);
+      border: 1px solid var(--card-border);
+      color: var(--ui-gray);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .filter-chip.active {
+      background: var(--ui-white);
+      color: var(--bg-black);
+      border-color: var(--ui-white);
+      font-weight: 700;
+    }
+
+    .task-add-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
+      margin-bottom: 12px;
+    }
+
+    .task-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: var(--ui-gray-dim);
+      color: var(--ui-white);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .task-input:focus {
+      border-color: var(--ui-white);
+    }
+
+    .task-input::placeholder {
+      color: var(--ui-gray-dark);
+    }
+
+    .task-add-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .task-select {
+      flex: 1;
+      padding: 7px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      font-size: 0.75rem;
+      font-family: inherit;
+      background: var(--ui-gray-dim);
+      color: var(--ui-white);
+      outline: none;
+    }
+
+    .task-select option {
+      background: #18181b;
+      color: #ffffff;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
+      transition: all 0.15s ease;
+    }
+
+    .task-item.completed {
+      opacity: 0.45;
+    }
+
+    .task-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid var(--ui-gray-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: transparent;
+      transition: all 0.15s ease;
+    }
+
+    .task-item.completed .task-checkbox {
+      background: var(--ui-white);
+      border-color: var(--ui-white);
+      color: var(--bg-black);
+    }
+
+    .task-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ui-white);
+      word-break: break-word;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+      color: var(--ui-gray);
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 3px;
+    }
+
+    .tag-priority {
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .priority-high { background: #27272a; border: 1px solid #52525b; color: #ffffff; }
+    .priority-med { background: #1f1f23; border: 1px solid #3f3f46; color: #d4d4d8; }
+    .priority-low { background: #18181b; border: 1px solid #27272a; color: #a1a1aa; }
+
+    .tag-category {
+      font-size: 0.65rem;
+      color: var(--ui-gray);
+      background: var(--ui-gray-dim);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--card-border);
+    }
+
+    .task-delete-btn {
+      background: transparent;
+      border: none;
+      color: var(--ui-gray-dark);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .task-delete-btn:hover {
+      color: var(--ui-white);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 16px;
+      color: var(--ui-gray-dark);
+      font-size: 0.8rem;
+    }
+
+    /* Tab 2: Fokus (Pomodoro) */
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .timer-modes {
+      display: flex;
+      background: var(--ui-gray-dim);
+      padding: 3px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--card-border);
+      gap: 3px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 7px 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--ui-gray);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .mode-btn.active {
+      background: var(--ui-white);
+      color: var(--bg-black);
+      font-weight: 700;
+    }
+
+    /* Custom Timer Settings Box */
+    .custom-timer-box {
+      display: none;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 16px;
+      gap: 8px;
+      animation: fadeIn 0.15s ease forwards;
+    }
+
+    .custom-timer-box.open {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .custom-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .custom-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .custom-field label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--ui-gray);
+    }
+
+    .custom-input {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: var(--ui-gray-dim);
+      color: var(--ui-white);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .custom-input:focus {
+      border-color: var(--ui-white);
+    }
+
+    /* Circular Timer */
+    .timer-circle-wrap {
+      position: relative;
+      width: 210px;
+      height: 210px;
+      margin-bottom: 20px;
+    }
+
+    .timer-svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .timer-bg-circle {
+      fill: none;
+      stroke: var(--ui-gray-darker);
+      stroke-width: 5;
+    }
+
+    .timer-progress-circle {
+      fill: none;
+      stroke: var(--ui-white);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 691;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .timer-display-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .timer-digits {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--ui-white);
+      letter-spacing: -1px;
+    }
+
+    .timer-state-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--ui-gray);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Controls */
+    .timer-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* 3D Round Timer Controls */
+    .btn-timer-main {
+      --button_color: #ffffff;
+      --button_outline_color: #27272a;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--button_outline_color);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: inline-block;
+    }
+
+    .btn-timer-main .button_top {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--button_color);
+      color: #000000;
+      border: 2px solid var(--button_outline_color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-0.25em);
+      transition: transform 0.1s ease;
+    }
+
+    .btn-timer-main:hover .button_top {
+      transform: translateY(-0.35em);
+    }
+
+    .btn-timer-main:active .button_top {
+      transform: translateY(0);
+    }
+
+    .btn-timer-secondary {
+      --button_color: #18181b;
+      --button_outline_color: #27272a;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--button_outline_color);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: inline-block;
+    }
+
+    .btn-timer-secondary .button_top {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--button_color);
+      color: #ffffff;
+      border: 2px solid var(--button_outline_color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-0.2em);
+      transition: transform 0.1s ease;
+    }
+
+    .btn-timer-secondary:hover .button_top {
+      transform: translateY(-0.3em);
+    }
+
+    .btn-timer-secondary:active .button_top {
+      transform: translateY(0);
+    }
+
+    /* Ambient Sounds */
+    .ambient-card {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 12px;
+    }
+
+    .ambient-options {
+      display: flex;
+      gap: 6px;
+    }
+
+    .sound-btn {
+      flex: 1;
+      padding: 7px 2px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: var(--ui-gray-dim);
+      color: var(--ui-gray);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .sound-btn.active {
+      background: var(--ui-white);
+      border-color: var(--ui-white);
+      color: var(--bg-black);
+      font-weight: 700;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .stat-box {
+      background: var(--card-bg);
+      padding: 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ui-white);
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--ui-gray);
+      font-weight: 600;
+    }
+
+    /* Tab 3: Jurnal */
+    .mood-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .mood-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 2px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      transition: all 0.15s ease;
+    }
+
+    .mood-emoji {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .mood-name {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--ui-gray);
+    }
+
+    .mood-item.active {
+      background: var(--ui-white);
+      border-color: var(--ui-white);
+    }
+
+    .mood-item.active .mood-name {
+      color: var(--bg-black);
+      font-weight: 700;
+    }
+
+    .journal-form {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 14px;
+    }
+
+    .journal-textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: var(--ui-gray-dim);
+      color: var(--ui-white);
+      font-size: 0.85rem;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
+    .journal-textarea:focus {
+      border-color: var(--ui-white);
+    }
+
+    .journal-textarea::placeholder {
+      color: var(--ui-gray-dark);
+    }
+
+    .journal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .journal-item {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .journal-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .journal-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .journal-time {
+      font-size: 0.68rem;
+      color: var(--ui-gray);
+    }
+
+    .journal-text {
+      font-size: 0.85rem;
+      color: var(--ui-white-muted);
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Fixed Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background: var(--bg-black);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 8px;
+      z-index: 100;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: var(--ui-gray-dark);
+      font-family: inherit;
+      cursor: pointer;
+      padding: 6px 0;
+      position: relative;
+    }
+
+    .nav-icon {
+      width: 19px;
+      height: 19px;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .nav-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .nav-item.active {
+      color: var(--ui-white);
+    }
+
+    .nav-item.active .nav-icon {
+      stroke: var(--ui-white);
+      stroke-width: 2.4;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 16px);
+      background: var(--ui-white);
+      color: var(--bg-black);
+      font-size: 0.58rem;
+      font-weight: 800;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-15px);
+      background: var(--ui-white);
+      color: var(--bg-black);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container" id="appContainer">
+    
+    <!-- Ultra-clean Minimal Header -->
+    <header class="app-header">
+      <div class="brand-title">
+        <div class="brand-icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <span>Productivity Hub</span>
+      </div>
+      <div class="header-date" id="headerDate">1 Okt</div>
+    </header>
+
+    <div class="toast" id="toastMessage">Aksi berhasil</div>
+
+    <main class="app-content">
+
+      <!-- ====================================================
+           TAB 1: TUGAS
+           ==================================================== -->
+      <section id="tab-tugas" class="tab-view active">
+        
+        <div class="task-summary-card">
+          <div class="task-summary-top">
+            <span>Tugas Hari Ini</span>
+            <span id="taskStatsText" style="font-family: var(--font-mono); font-size: 0.75rem;">0/0</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="taskProgressBar"></div>
+          </div>
+        </div>
+
+        <form class="task-add-box" id="taskForm" onsubmit="handleAddTask(event)">
+          <input 
+            type="text" 
+            class="task-input" 
+            id="taskInputTitle" 
+            placeholder="Tambah tugas baru..." 
+            autocomplete="off"
+            required
+          />
+          <div class="task-add-row">
+            <select class="task-select" id="taskCategory">
+              <option value="Kerja">Kerja</option>
+              <option value="Belajar">Belajar</option>
+              <option value="Pribadi">Pribadi</option>
+              <option value="Kesehatan">Kesehatan</option>
+            </select>
+            <select class="task-select" id="taskPriority">
+              <option value="med">Sedang</option>
+              <option value="high">Tinggi</option>
+              <option value="low">Rendah</option>
+            </select>
+            <button type="submit" class="btn-3d">
+              <span class="button_top" style="padding: 0.45em 0.85em;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <div class="filter-chips">
+          <button class="filter-chip active" onclick="setTaskFilter('all', this)">Semua (<span id="countAll">0</span>)</button>
+          <button class="filter-chip" onclick="setTaskFilter('active', this)">Aktif (<span id="countActive">0</span>)</button>
+          <button class="filter-chip" onclick="setTaskFilter('completed', this)">Selesai (<span id="countDone">0</span>)</button>
+        </div>
+
+        <div class="task-list" id="taskListContainer"></div>
+
+      </section>
+
+
+      <!-- ====================================================
+           TAB 2: FOKUS (POMODORO)
+           ==================================================== -->
+      <section id="tab-fokus" class="tab-view">
+        <div class="timer-container">
+          
+          <div class="timer-modes">
+            <button class="mode-btn active" onclick="setTimerMode('focus', 25, this)">25m</button>
+            <button class="mode-btn" onclick="setTimerMode('shortBreak', 5, this)">5m</button>
+            <button class="mode-btn" onclick="setTimerMode('longBreak', 15, this)">15m</button>
+            <button class="mode-btn" id="customModeBtn" onclick="toggleCustomBox(this)">Custom</button>
+          </div>
+
+          <!-- Custom Time Settings Box -->
+          <div class="custom-timer-box" id="customTimerBox">
+            <div class="custom-row">
+              <div class="custom-field">
+                <label>Fokus (menit)</label>
+                <input type="number" id="customFocusInput" class="custom-input" min="1" max="180" value="45">
+              </div>
+              <div class="custom-field">
+                <label>Istirahat (menit)</label>
+                <input type="number" id="customBreakInput" class="custom-input" min="1" max="60" value="10">
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+              <button type="button" class="btn-3d" style="flex: 1;" onclick="applyCustomTimer('focus')">
+                <span class="button_top">Mulai Fokus</span>
+              </button>
+              <button type="button" class="btn-3d-secondary" style="flex: 1;" onclick="applyCustomTimer('break')">
+                <span class="button_top">Mulai Rehat</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Clock Display -->
+          <div class="timer-circle-wrap">
+            <svg class="timer-svg" viewBox="0 0 240 240">
+              <circle class="timer-bg-circle" cx="120" cy="120" r="110"></circle>
+              <circle class="timer-progress-circle" id="timerProgressCircle" cx="120" cy="120" r="110"></circle>
+            </svg>
+            <div class="timer-display-inner">
+              <div class="timer-digits" id="timerTimeDisplay">25:00</div>
+              <div class="timer-state-label" id="timerStatusLabel">Fokus</div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="timer-controls">
+            <button class="btn-timer-secondary" onclick="resetTimer()" title="Reset">
+              <span class="button_top">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+              </span>
+            </button>
+
+            <button class="btn-timer-main" id="timerToggleBtn" onclick="toggleTimer()">
+              <span class="button_top">
+                <svg id="timerPlayIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </span>
+            </button>
+
+            <button class="btn-timer-secondary" onclick="skipTimer()" title="Lompati">
+              <span class="button_top">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                  <line x1="19" y1="5" x2="19" y2="19"></line>
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- Ambient Noise -->
+          <div class="ambient-card">
+            <div class="ambient-options">
+              <button class="sound-btn active" onclick="setAmbientSound('off', this)">Mati</button>
+              <button class="sound-btn" onclick="setAmbientSound('rain', this)">Hujan</button>
+              <button class="sound-btn" onclick="setAmbientSound('waves', this)">Ombak</button>
+              <button class="sound-btn" onclick="setAmbientSound('pink', this)">Noise</button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-number" id="focusCountDisplay">0</div>
+              <div class="stat-label">Sesi Hari Ini</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="focusMinutesDisplay">0m</div>
+              <div class="stat-label">Total Waktu</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ====================================================
+           TAB 3: JURNAL
+           ==================================================== -->
+      <section id="tab-jurnal" class="tab-view">
+        
+        <div class="mood-grid">
+          <div class="mood-item active" onclick="selectMood('😊', 'Senang', this)">
+            <span class="mood-emoji">😊</span>
+            <span class="mood-name">Senang</span>
+          </div>
+          <div class="mood-item" onclick="selectMood('⚡', 'Produktif', this)">
+            <span class="mood-emoji">⚡</span>
+            <span class="mood-name">Fokus</span>
+          </div>
+          <div class="mood-item" onclick="selectMood('🌿', 'Tenang', this)">
+            <span class="mood-emoji">🌿</span>
+            <span class="mood-name">Tenang</span>
+          </div>
+          <div class="mood-item" onclick="selectMood('🥱', 'Lelah', this)">
+            <span class="mood-emoji">🥱</span>
+            <span class="mood-name">Lelah</span>
+          </div>
+          <div class="mood-item" onclick="selectMood('🌧️', 'Cemas', this)">
+            <span class="mood-emoji">🌧️</span>
+            <span class="mood-name">Cemas</span>
+          </div>
+        </div>
+
+        <form class="journal-form" id="journalForm" onsubmit="handleAddJournal(event)">
+          <textarea 
+            class="journal-textarea" 
+            id="journalInputContent" 
+            placeholder="Tulis catatan harian..."
+            required
+          ></textarea>
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn-3d">
+              <span class="button_top">Simpan</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="journal-list" id="journalListContainer"></div>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" id="nav-tugas" onclick="switchTab('tugas')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 11 12 14 22 4"></polyline>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span class="nav-badge" id="navTaskBadge" style="display:none;">0</span>
+        <span class="nav-label">Tugas</span>
+      </button>
+
+      <button class="nav-item" id="nav-fokus" onclick="switchTab('fokus')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="10" y1="2" x2="14" y2="2"></line>
+          <line x1="12" y1="14" x2="15" y2="11"></line>
+          <circle cx="12" cy="14" r="8"></circle>
+        </svg>
+        <span class="nav-label">Fokus</span>
+      </button>
+
+      <button class="nav-item" id="nav-jurnal" onclick="switchTab('jurnal')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <line x1="8" y1="6" x2="16" y2="6"></line>
+          <line x1="8" y1="10" x2="14" y2="10"></line>
+        </svg>
+        <span class="nav-label">Jurnal</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    const STORAGE_KEY_TASKS = 'prodhub_tasks_bw_clean';
+    const STORAGE_KEY_JOURNAL = 'prodhub_journal_bw_clean';
+    const STORAGE_KEY_POMODORO = 'prodhub_pomodoro_bw_clean';
+    const STORAGE_KEY_CUSTOM = 'prodhub_custom_timer';
+
+    let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS)) || [
+      { id: '1', title: 'Selesaikan rancangan arsitektur sistem', category: 'Kerja', priority: 'high', completed: false, createdAt: Date.now() - 3600000 },
+      { id: '2', title: 'Membaca buku 15 menit', category: 'Belajar', priority: 'med', completed: true, createdAt: Date.now() - 7200000 }
+    ];
+
+    let journals = JSON.parse(localStorage.getItem(STORAGE_KEY_JOURNAL)) || [
+      { id: '1', moodEmoji: '⚡', moodName: 'Fokus', text: 'Berhasil menyelesaikan target utama tepat waktu.', timestamp: '10:30 • Hari ini' }
+    ];
+
+    let pomodoroStats = JSON.parse(localStorage.getItem(STORAGE_KEY_POMODORO)) || {
+      completedCount: 0,
+      totalMinutes: 0,
+      lastDate: new Date().toDateString()
+    };
+
+    let customSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_CUSTOM)) || {
+      focusMinutes: 45,
+      breakMinutes: 10
+    };
+
+    if (pomodoroStats.lastDate !== new Date().toDateString()) {
+      pomodoroStats.completedCount = 0;
+      pomodoroStats.totalMinutes = 0;
+      pomodoroStats.lastDate = new Date().toDateString();
+      localStorage.setItem(STORAGE_KEY_POMODORO, JSON.stringify(pomodoroStats));
+    }
+
+    let currentFilter = 'all';
+    let selectedMood = { emoji: '😊', name: 'Senang' };
+
+    function updateDate() {
+      const now = new Date();
+      const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      document.getElementById('headerDate').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      const targetNav = document.getElementById(`nav-${tabId}`);
+
+      if (targetTab && targetNav) {
+        targetTab.classList.add('active');
+        targetNav.classList.add('active');
+      }
+      document.querySelector('.app-content').scrollTop = 0;
+    }
+
+    let toastTimeout;
+    function showToast(message) {
+      const toast = document.getElementById('toastMessage');
+      toast.innerText = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    /* Tab 1: Tugas */
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function handleAddTask(e) {
+      e.preventDefault();
+      const input = document.getElementById('taskInputTitle');
+      const title = input.value.trim();
+      if (!title) return;
+
+      tasks.unshift({
+        id: Date.now().toString(),
+        title,
+        category: document.getElementById('taskCategory').value,
+        priority: document.getElementById('taskPriority').value,
+        completed: false,
+        createdAt: Date.now()
+      });
+
+      saveTasks();
+      input.value = '';
+      showToast('Tugas ditambahkan');
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      saveTasks();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      showToast('Tugas dihapus');
+    }
+
+    function setTaskFilter(filter, el) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderTasks();
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('taskListContainer');
+      const countAll = tasks.length;
+      const countDone = tasks.filter(t => t.completed).length;
+      const countActive = countAll - countDone;
+
+      document.getElementById('countAll').innerText = countAll;
+      document.getElementById('countActive').innerText = countActive;
+      document.getElementById('countDone').innerText = countDone;
+
+      const navBadge = document.getElementById('navTaskBadge');
+      if (countActive > 0) {
+        navBadge.style.display = 'flex';
+        navBadge.innerText = countActive > 99 ? '99+' : countActive;
+      } else {
+        navBadge.style.display = 'none';
+      }
+
+      const percent = countAll === 0 ? 0 : Math.round((countDone / countAll) * 100);
+      document.getElementById('taskProgressBar').style.width = `${percent}%`;
+      document.getElementById('taskStatsText').innerText = `${countDone}/${countAll}`;
+
+      let filtered = tasks;
+      if (currentFilter === 'active') filtered = tasks.filter(t => !t.completed);
+      if (currentFilter === 'completed') filtered = tasks.filter(t => t.completed);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state">Tidak ada tugas</div>`;
+        return;
+      }
+
+      const priorityMap = {
+        high: { label: 'Tinggi', class: 'priority-high' },
+        med: { label: 'Sedang', class: 'priority-med' },
+        low: { label: 'Rendah', class: 'priority-low' }
+      };
+
+      container.innerHTML = filtered.map(task => {
+        const pInfo = priorityMap[task.priority] || priorityMap.med;
+        return `
+          <div class="task-item ${task.completed ? 'completed' : ''}">
+            <div class="task-checkbox" onclick="toggleTask('${task.id}')">
+              ${task.completed ? `
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ` : ''}
+            </div>
+            <div class="task-details" onclick="toggleTask('${task.id}')" style="cursor: pointer;">
+              <div class="task-text">${escapeHtml(task.title)}</div>
+              <div class="task-meta">
+                <span class="tag-priority ${pInfo.class}">${pInfo.label}</span>
+                <span class="tag-category">${escapeHtml(task.category)}</span>
+              </div>
+            </div>
+            <button class="task-delete-btn" onclick="deleteTask('${task.id}')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* Tab 2: Fokus (Pomodoro & Custom Timer) */
+    let timerDuration = 25 * 60;
+    let timerRemaining = 25 * 60;
+    let timerInterval = null;
+    let isTimerRunning = false;
+    let currentMode = 'focus';
+
+    const TOTAL_CIRCUMFERENCE = 2 * Math.PI * 110;
+
+    function setTimerMode(mode, minutes, element) {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        updateTimerToggleIcon();
+      }
+
+      currentMode = mode;
+      timerDuration = minutes * 60;
+      timerRemaining = timerDuration;
+
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+
+      const customBox = document.getElementById('customTimerBox');
+      if (customBox) customBox.classList.remove('open');
+
+      const statusLabel = document.getElementById('timerStatusLabel');
+      if (mode === 'focus' || mode === 'customFocus') {
+        statusLabel.innerText = 'Fokus';
+      } else if (mode === 'shortBreak' || mode === 'customBreak') {
+        statusLabel.innerText = 'Rehat';
+      } else {
+        statusLabel.innerText = 'Rehat Panjang';
+      }
+
+      updateTimerDisplay();
+    }
+
+    function toggleCustomBox(element) {
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+
+      const box = document.getElementById('customTimerBox');
+      box.classList.toggle('open');
+      
+      document.getElementById('customFocusInput').value = customSettings.focusMinutes;
+      document.getElementById('customBreakInput').value = customSettings.breakMinutes;
+    }
+
+    function applyCustomTimer(type) {
+      const focusVal = parseInt(document.getElementById('customFocusInput').value) || 25;
+      const breakVal = parseInt(document.getElementById('customBreakInput').value) || 5;
+
+      customSettings.focusMinutes = Math.max(1, focusVal);
+      customSettings.breakMinutes = Math.max(1, breakVal);
+      localStorage.setItem(STORAGE_KEY_CUSTOM, JSON.stringify(customSettings));
+
+      if (type === 'focus') {
+        setTimerMode('customFocus', customSettings.focusMinutes, document.getElementById('customModeBtn'));
+        showToast(`Fokus ${customSettings.focusMinutes}m diterapkan`);
+      } else {
+        setTimerMode('customBreak', customSettings.breakMinutes, document.getElementById('customModeBtn'));
+        showToast(`Rehat ${customSettings.breakMinutes}m diterapkan`);
+      }
+
+      document.getElementById('customTimerBox').classList.remove('open');
+    }
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        updateTimerToggleIcon();
+      } else {
+        isTimerRunning = true;
+        updateTimerToggleIcon();
+        timerInterval = setInterval(() => {
+          if (timerRemaining > 0) {
+            timerRemaining--;
+            updateTimerDisplay();
+          } else {
+            handleTimerComplete();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerRemaining = timerDuration;
+      updateTimerToggleIcon();
+      updateTimerDisplay();
+    }
+
+    function skipTimer() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      handleTimerComplete(true);
+    }
+
+    function handleTimerComplete(isSkipped = false) {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      updateTimerToggleIcon();
+
+      if (!isSkipped) {
+        playFinishChime();
+        if (currentMode === 'focus' || currentMode === 'customFocus') {
+          pomodoroStats.completedCount++;
+          pomodoroStats.totalMinutes += Math.round(timerDuration / 60);
+          localStorage.setItem(STORAGE_KEY_POMODORO, JSON.stringify(pomodoroStats));
+          updatePomodoroStats();
+          showToast('Sesi Selesai');
+          
+          if (currentMode === 'customFocus') {
+            setTimerMode('customBreak', customSettings.breakMinutes, document.getElementById('customModeBtn'));
+          } else {
+            setTimerMode('shortBreak', 5, document.querySelectorAll('.mode-btn')[1]);
+          }
+        } else {
+          showToast('Waktu rehat selesai');
+          if (currentMode === 'customBreak') {
+            setTimerMode('customFocus', customSettings.focusMinutes, document.getElementById('customModeBtn'));
+          } else {
+            setTimerMode('focus', 25, document.querySelectorAll('.mode-btn')[0]);
+          }
+        }
+      } else {
+        timerRemaining = timerDuration;
+        updateTimerDisplay();
+      }
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timerRemaining / 60);
+      const seconds = timerRemaining % 60;
+      document.getElementById('timerTimeDisplay').innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      const circle = document.getElementById('timerProgressCircle');
+      const offset = TOTAL_CIRCUMFERENCE * (1 - (timerDuration - timerRemaining) / timerDuration);
+      circle.style.strokeDashoffset = offset;
+    }
+
+    function updateTimerToggleIcon() {
+      const playIcon = document.getElementById('timerPlayIcon');
+      if (isTimerRunning) {
+        playIcon.innerHTML = `<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>`;
+      } else {
+        playIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
+      }
+    }
+
+    function updatePomodoroStats() {
+      document.getElementById('focusCountDisplay').innerText = pomodoroStats.completedCount;
+      document.getElementById('focusMinutesDisplay').innerText = `${pomodoroStats.totalMinutes}m`;
+    }
+
+    /* Web Audio */
+    let audioCtx = null, ambientNode = null;
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playFinishChime() {
+      try {
+        const ctx = getAudioContext();
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const startTime = ctx.currentTime + idx * 0.1;
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.2, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.4);
+        });
+      } catch (e) {}
+    }
+
+    function setAmbientSound(type, element) {
+      document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
+      if (element) element.classList.add('active');
+
+      if (type === 'off') {
+        if (ambientNode) {
+          try { ambientNode.stop(); ambientNode.disconnect(); } catch (e) {}
+          ambientNode = null;
+        }
+        return;
+      }
+
+      try {
+        if (ambientNode) {
+          try { ambientNode.stop(); ambientNode.disconnect(); } catch (e) {}
+        }
+        const ctx = getAudioContext();
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * 0.15;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = type === 'waves' ? 'bandpass' : 'lowpass';
+        filter.frequency.setValueAtTime(type === 'rain' ? 800 : 400, ctx.currentTime);
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        noise.start(0);
+        ambientNode = noise;
+      } catch (e) {}
+    }
+
+    /* Tab 3: Jurnal */
+    function selectMood(emoji, name, element) {
+      selectedMood = { emoji, name };
+      document.querySelectorAll('.mood-item').forEach(m => m.classList.remove('active'));
+      if (element) element.classList.add('active');
+    }
+
+    function saveJournals() {
+      localStorage.setItem(STORAGE_KEY_JOURNAL, JSON.stringify(journals));
+      renderJournals();
+    }
+
+    function handleAddJournal(e) {
+      e.preventDefault();
+      const textarea = document.getElementById('journalInputContent');
+      const text = textarea.value.trim();
+      if (!text) return;
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateStr = `${now.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][now.getMonth()]}`;
+
+      journals.unshift({
+        id: Date.now().toString(),
+        moodEmoji: selectedMood.emoji,
+        moodName: selectedMood.name,
+        text,
+        timestamp: `${timeStr} • ${dateStr}`
+      });
+
+      saveJournals();
+      textarea.value = '';
+      showToast('Catatan disimpan');
+    }
+
+    function deleteJournal(id) {
+      journals = journals.filter(j => j.id !== id);
+      saveJournals();
+      showToast('Catatan dihapus');
+    }
+
+    function renderJournals() {
+      const container = document.getElementById('journalListContainer');
+      if (journals.length === 0) {
+        container.innerHTML = `<div class="empty-state">Tidak ada catatan</div>`;
+        return;
+      }
+
+      container.innerHTML = journals.map(entry => `
+        <div class="journal-item">
+          <div class="journal-item-header">
+            <div class="journal-meta-left">
+              <span>${entry.moodEmoji}</span>
+              <span style="font-size: 0.75rem; font-weight: 700;">${escapeHtml(entry.moodName)}</span>
+              <span class="journal-time">${escapeHtml(entry.timestamp)}</span>
+            </div>
+            <button class="task-delete-btn" onclick="deleteJournal('${entry.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="journal-text">${escapeHtml(entry.text)}</div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDate();
+      renderTasks();
+      updateTimerDisplay();
+      updatePomodoroStats();
+      renderJournals();
+    });
+  </script>
+</body>
+</html>
